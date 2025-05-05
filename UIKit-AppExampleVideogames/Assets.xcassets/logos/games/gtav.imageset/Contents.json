@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Grand Theft Auto.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

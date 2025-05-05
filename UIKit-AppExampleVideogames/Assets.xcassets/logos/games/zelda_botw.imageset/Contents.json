@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Zelda.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Epic Games Logo.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
