@@ -20,7 +20,7 @@ extension Videogame {
     @NSManaged public var logo: String?
     @NSManaged public var releaseYear: Date?
     @NSManaged public var title: String?
-    @NSManaged public var platforms: String?
+    @NSManaged public var platforms: [String]?
     @NSManaged public var developer: Developer?
 
 }

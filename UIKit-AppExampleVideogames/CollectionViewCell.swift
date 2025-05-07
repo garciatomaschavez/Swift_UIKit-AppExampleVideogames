@@ -60,7 +60,7 @@ class CollectionViewCell: UICollectionViewCell {
         return imageView
     }()
     
-    private func createPlatformLogoImageView(for platform: Platforms) -> UIImageView {
+    private func createPlatformLogoImageView(for platform: Platform) -> UIImageView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.image = UIImage(named: "logos/platforms/\(platform.rawValue)")?.addPadding(3)
@@ -202,10 +202,10 @@ class CollectionViewCell: UICollectionViewCell {
         videogameReleaseYear.text = model.releaseYear?.formatted(date: .numeric, time: .omitted)
         DEBUG_ENABLED ? print("\t - Set videogameReleaseYear to cell") : nil
         
-        var platforms: [Platforms] = []
+        var platforms: [Platform] = []
         
         if let platformsStrings = model.platforms as? [String] {
-            platforms = platformsStrings.compactMap { Platforms(rawValue: $0) }
+            platforms = platformsStrings.compactMap { Platform(rawValue: $0) }
         } else {
             print("Warning: platforms is not of type [String]")
             //  Handle the case where platforms is not a [String]

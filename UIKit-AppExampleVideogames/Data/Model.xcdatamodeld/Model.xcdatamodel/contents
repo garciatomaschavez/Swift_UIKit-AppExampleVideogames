@@ -9,7 +9,7 @@
     <entity name="Videogame" representedClassName="Videogame" syncable="YES">
         <attribute name="gameDescription" optional="YES" attributeType="String"/>
         <attribute name="logo" optional="YES" attributeType="String"/>
-        <attribute name="platforms" optional="YES" attributeType="String"/>
+        <attribute name="platforms" optional="YES" attributeType="Transformable" customClassName="[String]"/>
         <attribute name="releaseYear" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="title" optional="YES" attributeType="String"/>
         <relationship name="developer" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Developer" inverseName="videogames" inverseEntity="Developer"/>

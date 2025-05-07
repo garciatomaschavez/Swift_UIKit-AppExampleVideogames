@@ -185,9 +185,9 @@ class BottomSheetContentView: UIView, UIScrollViewDelegate {
         // Configure platforms
         platformsStackView.arrangedSubviews.forEach { $0.removeFromSuperview() } // Clear previous platforms
         
-        var platforms: [Platforms] = []
+        var platforms: [Platform] = []
         if let platformsStrings = game.platforms as? [String] {
-            platforms = platformsStrings.compactMap { Platforms(rawValue: $0) }
+            platforms = platformsStrings.compactMap { Platform(rawValue: $0) }
         } else {
             print("Warning: platforms is not of type [String]")
             //  Handle the case where platforms is not a [String]
@@ -209,7 +209,7 @@ class BottomSheetContentView: UIView, UIScrollViewDelegate {
         //           setupImageCarousel()
     }
 
-       private func createPlatformLogoImageView(for platform: Platforms) -> UIImageView {
+       private func createPlatformLogoImageView(for platform: Platform) -> UIImageView {
            let imageView = UIImageView()
            imageView.contentMode = .scaleAspectFit
            imageView.image = UIImage(named: "logos/platforms/\(platform.rawValue)")?.addPadding(3)

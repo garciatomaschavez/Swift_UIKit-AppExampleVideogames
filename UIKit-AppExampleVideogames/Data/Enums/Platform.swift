@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Platforms: String {
+enum Platform: String {
     case None = "missing"
     case Steam = "steam"
     case PC = "pc"
