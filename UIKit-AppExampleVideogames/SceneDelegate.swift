@@ -6,79 +6,83 @@
 //
 
 import UIKit
-import CoreData
+import CoreData // Import CoreData
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
-    
+
+    // MARK: - Core Data Stack
     lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "Model")
+        let modelName = "AppExampleVideogames" // Ensure this matches your .xcdatamodeld file
+        let container = NSPersistentContainer(name: modelName)
+        
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
-                // Handle the error appropriately (e.g., log it, show an alert)
                 fatalError("Unresolved error \(error), \(error.userInfo)")
+            } else {
+                print("Core Data stack successfully initialized with model: \(modelName)")
             }
         })
         return container
     }()
 
+    // MARK: - Service and Repository Dependencies
+    lazy var coreDataService = CoreDataService()
+    lazy var videogameRepository: VideogameRepositoryProtocol = CoreDataVideogameRepository(coreDataService: self.coreDataService)
+    // lazy var developerRepository: DeveloperRepositoryProtocol = CoreDataDeveloperRepository(coreDataService: self.coreDataService)
+
+    // MARK: - Use Case Dependencies
+    lazy var getAllVideogamesUseCase: GetAllVideogamesUseCase = GetAllVideogamesUseCase(videogameRepository: self.videogameRepository)
+    lazy var updateFavoriteUseCase: UpdateFavoriteVideogameUseCase = UpdateFavoriteVideogameUseCase(videogameRepository: self.videogameRepository)
+    lazy var getVideogameByIdUseCase: GetVideogameByIdUseCase = GetVideogameByIdUseCase(videogameRepository: self.videogameRepository)
+
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
-        // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
-        // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
-        // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
-        // CoreDataService.deleteAllData()
-        CoreDataService.fetchDataAndStoreInCoreData()
+        guard let windowScene = (scene as? UIWindowScene) else { return }
+        window = UIWindow(windowScene: windowScene)
+
+        print("SceneDelegate: willConnectTo session - Setting up dependencies.")
+
+        // 1. Create Presenter for the list
+        let videogameListPresenter = VideogameListPresenter(
+            getAllVideogamesUseCase: self.getAllVideogamesUseCase,
+            updateFavoriteVideogameUseCase: self.updateFavoriteUseCase
+        )
+
+        // 2. Create ViewController and Inject Dependencies
+        let viewController = ViewController()
+        viewController.presenter = videogameListPresenter
+        viewController.getVideogameByIdUseCase = self.getVideogameByIdUseCase
+
+        // 3. Set up root view controller
+        let navigationController = UINavigationController(rootViewController: viewController)
+        window?.rootViewController = navigationController
+        window?.makeKeyAndVisible()
         
-        guard let _ = (scene as? UIWindowScene) else { return }
-    }
-
-    func sceneDidDisconnect(_ scene: UIScene) {
-        // Called as the scene is being released by the system.
-        // This occurs shortly after the scene enters the background, or when its session is discarded.
-        // Release any resources associated with this scene that can be re-created the next time the scene connects.
-        // The scene may re-connect later, as its session was not necessarily discarded (see `application:didDiscardSceneSessions` instead).
-    }
-
-    func sceneDidBecomeActive(_ scene: UIScene) {
-        // Called when the scene has moved from an inactive state to an active state.
-        // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
-    }
-
-    func sceneWillResignActive(_ scene: UIScene) {
-        // Called when the scene will move from an active state to an inactive state.
-        // This may occur due to temporary interruptions (ex. an incoming phone call).
-    }
-
-    func sceneWillEnterForeground(_ scene: UIScene) {
-        // Called as the scene transitions from the background to the foreground.
-        // Use this method to undo the changes made on entering the background.
+        // 4. Trigger initial Firebase data fetch
+        // Ensure Core Data stack is ready before this.
+        // The lazy var persistentContainer should be initialized by now as coreDataService uses it.
+//        print("SceneDelegate: Attempting to fetch data from Firebase and store in Core Data...")
+//        CoreDataService.fetchDataAndStoreInCoreData()
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
-        // Called as the scene transitions from the foreground to the background.
-        // Use this method to save data, release shared resources, and store enough scene-specific state information
-        // to restore the scene back to its current state.
-        
-        self.saveContext() // Call the saveContext function
+        saveContext()
     }
-    
-    // MARK: - Core Data Saving support
 
     func saveContext () {
         let context = persistentContainer.viewContext
         if context.hasChanges {
             do {
                 try context.save()
+                print("SceneDelegate: Context saved successfully.")
             } catch {
-                // Handle the error appropriately
                 let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+                print("SceneDelegate: Unresolved error saving context \(nserror), \(nserror.userInfo)")
+                // Consider more robust error handling than fatalError for production
+                // fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
             }
         }
     }
-
-
 }
-
