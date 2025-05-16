@@ -46,18 +46,19 @@ struct VideogameViewModel: Identifiable, Equatable {
 extension VideogameViewModel {
     static func from(entity: VideogameEntity) -> VideogameViewModel {
         let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "MMM d, yyyy" // Format for cell display
+        dateFormatter.dateFormat = "\(NSLocalizedString("VideogameViewModel_dateFormatter", comment: "."))"
+        // Format for cell display
 
         let releaseText: String?
         if let date = entity.releaseDate {
-            releaseText = "Released: \(dateFormatter.string(from: date))"
+            releaseText = "\(NSLocalizedString("VideogameViewModel_releasedText", comment: ".")): \(dateFormatter.string(from: date))"
         } else {
-            releaseText = "Release date: TBD"
+            releaseText = "\(NSLocalizedString("VideogameViewModel_notReleasedText", comment: "."))"
         }
 
         let devNameText: String?
         if let developer = entity.developer {
-            devNameText = "By \(developer.name)"
+            devNameText = "\(NSLocalizedString("VideogameViewModel_devNameText", comment: ".")) \(developer.name)"
         } else {
             devNameText = nil
         }

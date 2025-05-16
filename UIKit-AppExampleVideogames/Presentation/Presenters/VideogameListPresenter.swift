@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit // Import UIKit for UI related tasks like showing loading
 
 class VideogameListPresenter: VideogameListPresenterProtocol {
     
@@ -24,40 +25,64 @@ class VideogameListPresenter: VideogameListPresenterProtocol {
         self.getAllVideogamesUseCase = getAllVideogamesUseCase
         self.updateFavoriteVideogameUseCase = updateFavoriteVideogameUseCase
         print("VideogameListPresenter: Initialized.")
+        // Register for .dataUpdated notification here or in viewDidLoad
+        NotificationCenter.default.addObserver(self, selector: #selector(handleDataUpdated), name: .dataUpdated, object: nil)
     }
 
     func viewDidLoad() {
-        print("VideogameListPresenter: viewDidLoad called. Fetching videogames...")
-        // Register for .dataUpdated notification
-        NotificationCenter.default.addObserver(self, selector: #selector(handleDataUpdated), name: .dataUpdated, object: nil)
-        fetchVideogames()
+        print("VideogameListPresenter: viewDidLoad called. Fetching videogames initially from local store...")
+        fetchVideogames() // Initial fetch from local Core Data
     }
     
     @objc private func handleDataUpdated() {
-        print("VideogameListPresenter: Received .dataUpdated notification. Re-fetching videogames...")
+        print("VideogameListPresenter: Received .dataUpdated notification. Re-fetching videogames from local store...")
+        // This will be triggered after CoreDataService finishes importing from Firebase
         fetchVideogames()
     }
 
     func refreshDataRequested() {
-        print("VideogameListPresenter: refreshDataRequested. Fetching videogames...")
-        fetchVideogames()
+        print("VideogameListPresenter: refreshDataRequested. Triggering Firebase sync...")
+        // Show loading indicator to the user
+        // Ensure this is dispatched to the main thread if view methods require it
+        DispatchQueue.main.async {
+            self.view?.displayLoading(true)
+        }
+        
+        // Call CoreDataService to fetch from Firebase and update Core Data.
+        // CoreDataService will post .dataUpdated upon completion,
+        // which will trigger handleDataUpdated, then fetchVideogames.
+        CoreDataService.fetchDataAndStoreInCoreData()
+        
+        // Note: The loading indicator (displayLoading(false)) will be handled
+        // inside the completion of the fetchVideogames method, which is called
+        // by handleDataUpdated after the Firebase sync and Core Data update.
     }
 
     private func fetchVideogames() {
-        view?.displayLoading(true)
+        // This method fetches from the local Core Data via the use case.
+        // It's called on initial load and after .dataUpdated notification.
+        print("VideogameListPresenter: fetchVideogames (from local Core Data) called.")
+        // Ensure view?.displayLoading(true) is called if this is a standalone refresh,
+        // but in the context of remote refresh, it's already set.
+        // For initial load, it might also be good to show loading.
+        if videogameViewModels.isEmpty { // Show loading for initial fetch if list is empty
+            DispatchQueue.main.async {
+                 self.view?.displayLoading(true)
+            }
+        }
+
         getAllVideogamesUseCase.execute { [weak self] result in
             guard let self = self else { return }
-            // Ensure UI updates are on the main thread
             DispatchQueue.main.async {
-                self.view?.displayLoading(false)
+                self.view?.displayLoading(false) // Always hide loading after this fetch completes
                 switch result {
                 case .success(let entities):
-                    print("VideogameListPresenter: fetchVideogames success. Received \(entities.count) entities.")
+                    print("VideogameListPresenter: fetchVideogames success. Received \(entities.count) entities from local store.")
                     self.videogameEntities = entities
                     self.videogameViewModels = entities.map { VideogameViewModel.from(entity: $0) }
                     self.view?.displayVideogames(self.videogameViewModels)
                 case .failure(let error):
-                    print("VideogameListPresenter: fetchVideogames failed. Error: \(error.localizedDescription)")
+                    print("VideogameListPresenter: fetchVideogames (from local) failed. Error: \(error.localizedDescription)")
                     self.view?.displayError(title: "Error Fetching Data", message: error.localizedDescription)
                 }
             }
@@ -86,7 +111,10 @@ class VideogameListPresenter: VideogameListPresenterProtocol {
         let newFavoriteStatus = !entity.isFavorite
         print("VideogameListPresenter: Toggling favorite for \(entity.name) to \(newFavoriteStatus)")
 
-        view?.displayLoading(true)
+        // Show loading for the specific action
+        DispatchQueue.main.async {
+             self.view?.displayLoading(true)
+        }
         updateFavoriteVideogameUseCase.execute(videogameId: id, isFavorite: newFavoriteStatus) { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
@@ -96,14 +124,12 @@ class VideogameListPresenter: VideogameListPresenterProtocol {
                     print("VideogameListPresenter: Favorite status updated successfully for \(entity.name).")
                     self.videogameEntities[entityIndex].isFavorite = newFavoriteStatus
                     let updatedViewModel = VideogameViewModel.from(entity: self.videogameEntities[entityIndex])
-                    // Ensure the index for viewModels is also correct if they can get out of sync
                     if index < self.videogameViewModels.count && self.videogameViewModels[index].id == updatedViewModel.id {
                          self.videogameViewModels[index] = updatedViewModel
                          self.view?.refreshVideogame(at: index, with: updatedViewModel)
                     } else {
-                        // Fallback to full refresh if index mapping is uncertain
-                        print("VideogameListPresenter: ViewModel index mismatch after favorite update, performing full refresh.")
-                        self.fetchVideogames() // Or find the correct index in viewModels
+                        print("VideogameListPresenter: ViewModel index mismatch after favorite update, performing full local refresh.")
+                        self.fetchVideogames()
                     }
                 case .failure(let error):
                     print("VideogameListPresenter: Failed to update favorite status. Error: \(error.localizedDescription)")

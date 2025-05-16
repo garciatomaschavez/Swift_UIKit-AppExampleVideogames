@@ -53,13 +53,13 @@ extension VideogameDetailViewModel {
     static func from(entity: VideogameEntity) -> VideogameDetailViewModel {
         let dateFormatter = DateFormatter()
         // More detailed date format for detail view
-        dateFormatter.dateFormat = "MMMM d, yyyy"
+        dateFormatter.dateFormat = "\(NSLocalizedString("VideogameViewModel_dateFormatter", comment: "."))"
 
         let releaseText: String?
         if let date = entity.releaseDate {
-            releaseText = "Released: \(dateFormatter.string(from: date))"
+            releaseText = "\(NSLocalizedString("VideogameViewModel_releasedText", comment: ".")): \(dateFormatter.string(from: date))"
         } else {
-            releaseText = "Release Date: TBD"
+            releaseText = "\(NSLocalizedString("VideogameViewModel_notReleasedText", comment: "."))"
         }
         
         let platformIcons: [String]? = entity.platforms?.map { $0.imageName } // Get platform logo names

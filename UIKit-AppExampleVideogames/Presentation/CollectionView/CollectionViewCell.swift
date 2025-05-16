@@ -11,13 +11,12 @@ class CollectionViewCell: UICollectionViewCell {
     static let identifier = "MainVideogameCollectionViewCell"
     
     weak var actionDelegate: VideogameCellActionDelegate?
-    private var currentViewModelId: UUID? // Store ID for delegate calls
+    private var currentViewModelId: UUID?
     private var currentIndexPath: IndexPath?
 
-    // UI Elements
+    // --- UI Elements (Copied from your previous correct version) ---
     private let platformInfoStackView: UIStackView = {
         let stackView = UIStackView(frame: .zero)
-        // stackView.layer.backgroundColor = UIColor.systemIndigo.withAlphaComponent(0.7).cgColor // For debug
         stackView.layer.cornerRadius = 6
         stackView.axis = .horizontal
         stackView.spacing = 4
@@ -30,9 +29,8 @@ class CollectionViewCell: UICollectionViewCell {
     
     private let developerInfoStackView: UIStackView = {
         let stackView = UIStackView(frame: .zero)
-        // stackView.layer.backgroundColor = UIColor.systemTeal.withAlphaComponent(0.7).cgColor // For debug
         stackView.layer.cornerRadius = 8
-        stackView.axis = .horizontal // Changed to horizontal for logo + name
+        stackView.axis = .horizontal
         stackView.spacing = 6
         stackView.alignment = .center
         stackView.distribution = .fill
@@ -41,7 +39,7 @@ class CollectionViewCell: UICollectionViewCell {
         return stackView
     }()
     
-    private let headerStackView: UIStackView = { // Contains game logo and name
+    private let headerStackView: UIStackView = {
         let stackView = UIStackView(frame: .zero)
         stackView.axis = .horizontal
         stackView.spacing = 10
@@ -50,7 +48,7 @@ class CollectionViewCell: UICollectionViewCell {
         return stackView
     }()
     
-    private let videogameLogoImageView: UIImageView = { // Game's main icon
+    private let videogameLogoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
@@ -67,14 +65,14 @@ class CollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    private let videogameDeveloperLogoImageView: UIImageView = { // Developer's logo
+    private let videogameDeveloperLogoImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         return imageView
     }()
     
-    private let videogameDeveloperNameLabel: UILabel = { // Developer's name text
+    private let videogameDeveloperNameLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 13, weight: .regular)
         label.textColor = .secondaryLabel
@@ -92,19 +90,21 @@ class CollectionViewCell: UICollectionViewCell {
     }()
 
     private lazy var favoriteButton: UIButton = {
-        let button = UIButton(type: .system)
+        let button = UIButton(type: .custom)
         button.setImage(UIImage(systemName: "heart"), for: .normal)
         button.setImage(UIImage(systemName: "heart.fill"), for: .selected)
-        button.tintColor = .systemRed
         button.addTarget(self, action: #selector(didTapFavorite), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.contentVerticalAlignment = .fill
+        button.contentHorizontalAlignment = .fill
         return button
     }()
+    // --- End of UI Elements ---
 
     private func createPlatformLogoImageView(imageName: String) -> UIImageView {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
-        imageView.image = UIImage(named: imageName) // ViewModel provides full image name
+        imageView.image = UIImage(named: imageName)
         return imageView
     }
         
@@ -113,14 +113,13 @@ class CollectionViewCell: UICollectionViewCell {
         contentView.layer.cornerRadius = 12
         contentView.backgroundColor = .secondarySystemGroupedBackground
         contentView.clipsToBounds = true
-
+    
         layer.shadowColor = UIColor.black.cgColor
         layer.shadowOffset = CGSize(width: 0, height: 1)
         layer.shadowRadius = 3
         layer.shadowOpacity = 0.1
         layer.masksToBounds = false
-        layer.shadowPath = UIBezierPath(roundedRect: bounds, cornerRadius: contentView.layer.cornerRadius).cgPath
-
+    
         setupCellUI()
         setupCellConstraints()
     }
@@ -142,12 +141,13 @@ class CollectionViewCell: UICollectionViewCell {
         videogameDeveloperNameLabel.text = nil
         releaseDateLabel.text = nil
         favoriteButton.isSelected = false
+        favoriteButton.tintColor = .systemRed // Reset to a default or ensure it's set in configure
         currentViewModelId = nil
         currentIndexPath = nil
         platformInfoStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
     }
 
-    private func setupCellUI() {
+    private func setupCellUI() { // Ensure this matches your actual implementation
         contentView.addSubview(headerStackView)
         contentView.addSubview(developerInfoStackView)
         contentView.addSubview(releaseDateLabel)
@@ -159,23 +159,28 @@ class CollectionViewCell: UICollectionViewCell {
         
         developerInfoStackView.addArrangedSubview(videogameDeveloperLogoImageView)
         developerInfoStackView.addArrangedSubview(videogameDeveloperNameLabel)
+
+        headerStackView.axis = .horizontal; headerStackView.spacing = 10; headerStackView.alignment = .center
+        developerInfoStackView.axis = .horizontal; developerInfoStackView.spacing = 6; developerInfoStackView.alignment = .center
+        platformInfoStackView.axis = .horizontal; platformInfoStackView.spacing = 4; platformInfoStackView.alignment = .center
     }
 
-    private func setupCellConstraints() {
-        headerStackView.translatesAutoresizingMaskIntoConstraints = false
-        developerInfoStackView.translatesAutoresizingMaskIntoConstraints = false
-        releaseDateLabel.translatesAutoresizingMaskIntoConstraints = false
-        platformInfoStackView.translatesAutoresizingMaskIntoConstraints = false
-        // Individual elements within stack views manage their own size or are sized by stack view distribution
+    private func setupCellConstraints() { // Ensure this matches your actual implementation
+         headerStackView.translatesAutoresizingMaskIntoConstraints = false
+         developerInfoStackView.translatesAutoresizingMaskIntoConstraints = false
+         releaseDateLabel.translatesAutoresizingMaskIntoConstraints = false
+         platformInfoStackView.translatesAutoresizingMaskIntoConstraints = false
+         videogameLogoImageView.translatesAutoresizingMaskIntoConstraints = false
+         videogameNameLabel.translatesAutoresizingMaskIntoConstraints = false
+         videogameDeveloperLogoImageView.translatesAutoresizingMaskIntoConstraints = false
+         videogameDeveloperNameLabel.translatesAutoresizingMaskIntoConstraints = false
 
         NSLayoutConstraint.activate([
-            // Favorite Button (Top Right)
             favoriteButton.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             favoriteButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             favoriteButton.widthAnchor.constraint(equalToConstant: 28),
             favoriteButton.heightAnchor.constraint(equalToConstant: 28),
 
-            // Header Stack View (Game Logo and Name)
             headerStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
             headerStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             headerStackView.trailingAnchor.constraint(equalTo: favoriteButton.leadingAnchor, constant: -8),
@@ -183,28 +188,26 @@ class CollectionViewCell: UICollectionViewCell {
             videogameLogoImageView.widthAnchor.constraint(equalToConstant: 50),
             videogameLogoImageView.heightAnchor.constraint(equalToConstant: 50),
 
-            // Developer Info Stack View (Below Header)
             developerInfoStackView.topAnchor.constraint(equalTo: headerStackView.bottomAnchor, constant: 8),
             developerInfoStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             developerInfoStackView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -12),
 
-            videogameDeveloperLogoImageView.widthAnchor.constraint(equalToConstant: 20), // Small dev logo
+            videogameDeveloperLogoImageView.widthAnchor.constraint(equalToConstant: 20),
             videogameDeveloperLogoImageView.heightAnchor.constraint(equalToConstant: 20),
             
-            // Release Date (Below Developer Info)
             releaseDateLabel.topAnchor.constraint(equalTo: developerInfoStackView.bottomAnchor, constant: 4),
             releaseDateLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
             releaseDateLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
 
-            // Platform Info Stack View (Bottom)
             platformInfoStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             platformInfoStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            platformInfoStackView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -12), // Allow it to not fill if few platforms
-            platformInfoStackView.heightAnchor.constraint(equalToConstant: 20) // Height for platform icons
+            platformInfoStackView.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -12),
+            platformInfoStackView.heightAnchor.constraint(equalToConstant: 20)
         ])
     }
     
-    func configure(with viewModel: VideogameViewModel, at indexPath: IndexPath) {
+    // Updated configure method to accept heartColor
+    func configure(with viewModel: VideogameViewModel, at indexPath: IndexPath, heartColor: UIColor) {
         self.currentViewModelId = viewModel.id
         self.currentIndexPath = indexPath
 
@@ -213,28 +216,28 @@ class CollectionViewCell: UICollectionViewCell {
         if let mainImageName = viewModel.mainImageName {
             videogameLogoImageView.image = UIImage(named: "logos/games/\(mainImageName)")
         } else {
-            videogameLogoImageView.image = UIImage(systemName: "photo") // Placeholder
+            videogameLogoImageView.image = UIImage(systemName: "photo")
         }
         
-        // Use developerLogoImageName from ViewModel
         if let devLogoName = viewModel.developerLogoImageName {
             videogameDeveloperLogoImageView.image = UIImage(named: "logos/developers/\(devLogoName)")
         } else {
-            videogameDeveloperLogoImageView.image = UIImage(systemName: "person.crop.square") // Placeholder
+            videogameDeveloperLogoImageView.image = UIImage(systemName: "person.crop.square")
         }
-        videogameDeveloperNameLabel.text = viewModel.developerNameText // This is the formatted string "By Developer"
+        videogameDeveloperNameLabel.text = viewModel.developerNameText
 
         releaseDateLabel.text = viewModel.releaseDateText
+        
         favoriteButton.isSelected = viewModel.isFavorite
-
+        favoriteButton.tintColor = heartColor // Apply the passed color
+    
         platformInfoStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
         if let platformIconAssetNames = viewModel.platformIconNames {
             for iconAssetName in platformIconAssetNames {
-                // Construct full path if iconAssetName is just "pc", "xbox" etc.
                 let platformImageView = createPlatformLogoImageView(imageName: "logos/platforms/\(iconAssetName)")
                 platformImageView.translatesAutoresizingMaskIntoConstraints = false
                 NSLayoutConstraint.activate([
-                    platformImageView.widthAnchor.constraint(equalToConstant: 18), // Small platform icons
+                    platformImageView.widthAnchor.constraint(equalToConstant: 18),
                     platformImageView.heightAnchor.constraint(equalToConstant: 18)
                 ])
                 platformInfoStackView.addArrangedSubview(platformImageView)
@@ -243,9 +246,8 @@ class CollectionViewCell: UICollectionViewCell {
     }
 
     @objc private func didTapFavorite() {
-        guard let path = currentIndexPath, let id = currentViewModelId else { return }
-        // The cell itself doesn't know the ID, it should come from the ViewModel or be passed to delegate
-        // Corrected: Use currentViewModelId
-        actionDelegate?.didTapFavoriteButton(on: self, at: path) // The VC will use its ViewModel array and index
+        guard let path = currentIndexPath else { return }
+        actionDelegate?.didTapFavoriteButton(on: self, at: path)
     }
 }
+

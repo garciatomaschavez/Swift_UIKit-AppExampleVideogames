@@ -11,13 +11,18 @@ import UIKit
 final class CollectionViewDataSource: NSObject, UICollectionViewDataSource {
     
     private var viewModels: [VideogameViewModel] = []
-    
-    // The ViewController will set this delegate to handle favorite button taps from the cell
-    weak var cellActionDelegate: VideogameCellActionDelegate? // Changed type
+    weak var cellActionDelegate: VideogameCellActionDelegate?
+    var heartColorProvider: (() -> UIColor)? // Closure to get the current heart color
 
-    init(viewModels: [VideogameViewModel] = [], cellActionDelegate: VideogameCellActionDelegate? = nil) { // Changed type
+    // Corrected Initializer
+    init(
+        viewModels: [VideogameViewModel] = [],
+        cellActionDelegate: VideogameCellActionDelegate? = nil,
+        heartColorProvider: (() -> UIColor)? = nil // Added parameter
+    ) {
         self.viewModels = viewModels
         self.cellActionDelegate = cellActionDelegate
+        self.heartColorProvider = heartColorProvider // Store it
     }
 
     func update(with viewModels: [VideogameViewModel]) {
@@ -35,7 +40,7 @@ final class CollectionViewDataSource: NSObject, UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.identifier, for: indexPath) as? CollectionViewCell else {
-            fatalError("Failed to dequeue CollectionViewCell.")
+            fatalError("Failed to dequeue CollectionViewCell. Make sure the identifier is correct and the cell is registered.")
         }
         
         guard indexPath.item < viewModels.count else {
@@ -44,10 +49,13 @@ final class CollectionViewDataSource: NSObject, UICollectionViewDataSource {
         }
         
         let viewModel = viewModels[indexPath.item]
-        // Corrected: Call the new configure method in CollectionViewCell
-        cell.configure(with: viewModel, at: indexPath)
+        // Get current heart color using the provider
+        let currentHeartColor = heartColorProvider?() ?? .systemRed
         
-        // Corrected: Assign the delegate for cell actions (like favorite button)
+        // Pass the heart color to the cell's configure method
+        // Ensure CollectionViewCell.swift's configure method accepts this
+        cell.configure(with: viewModel, at: indexPath, heartColor: currentHeartColor)
+        
         cell.actionDelegate = self.cellActionDelegate
         
         return cell
