@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "League of Legends Logo.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

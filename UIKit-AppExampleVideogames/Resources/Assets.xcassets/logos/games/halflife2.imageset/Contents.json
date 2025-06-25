@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Half-Life 2 Logo.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}

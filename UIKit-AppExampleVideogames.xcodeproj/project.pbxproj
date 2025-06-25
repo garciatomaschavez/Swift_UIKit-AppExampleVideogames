@@ -10,22 +10,9 @@
 		E2FD4EB72DE052F3005F4631 /* UIKit-AppExampleVideogames.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "UIKit-AppExampleVideogames.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		E2FD4ECC2DE052F5005F4631 /* Exceptions for "UIKit-AppExampleVideogames" folder in "UIKit-AppExampleVideogames" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = E2FD4EB62DE052F3005F4631 /* UIKit-AppExampleVideogames */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		E2FD4EB92DE052F3005F4631 /* UIKit-AppExampleVideogames */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				E2FD4ECC2DE052F5005F4631 /* Exceptions for "UIKit-AppExampleVideogames" folder in "UIKit-AppExampleVideogames" target */,
-			);
 			path = "UIKit-AppExampleVideogames";
 			sourceTree = "<group>";
 		};

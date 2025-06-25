@@ -1,0 +1,12 @@
+{
+  "images" : [
+    {
+      "filename" : "Assassin's Creed Logo.svg",
+      "idiom" : "universal"
+    }
+  ],
+  "info" : {
+    "author" : "xcode",
+    "version" : 1
+  }
+}
